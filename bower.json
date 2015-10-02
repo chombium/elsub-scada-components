@@ -1,0 +1,23 @@
+{
+  "name": "el-sub-scada",
+  "version": "0.0.1",
+  "description": "Electrical Substation Javascript SCADA components",
+  "main": "",
+  "moduleType": [],
+  "authors": [
+    "Jovan Kostovski <chombium@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4"
+  }
+}

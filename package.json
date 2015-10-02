@@ -1,0 +1,17 @@
+{
+  "name": "el-sub-scada",
+  "version": "0.0.1",
+  "description": "Electrical Substation Javascript SCADA components",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jovan Kostovski <chombium@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-stylus": "^2.0.7",
+    "stylus": "^0.52.4"
+  }
+}
