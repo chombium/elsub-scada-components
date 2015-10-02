@@ -2,6 +2,7 @@
 ElSubScada_Colors = {
         colorFillInaktive: "#c0c0c0",
         colorUndefined   : "gray",
+        colorOff         : "#000",
         color110         : "red",
         color35          : "green",
         color10          : "red",

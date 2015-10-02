@@ -4,6 +4,10 @@ ElSubScada_BusbarDisconnector = function (params) {
     this.positionY = params.positionY;
     this.width     = params.width;
     this.height    = params.height;
+    this.colorUndefined = params.colorUndefined;
+    this.colorFillOff = params.colorFillOff;
+    this.colorOn = params.colorOn;
+    this.colorOff = params.colorOff;
     this.debug     = params.debug || false;
     
     if (params.state == undefined){
@@ -34,16 +38,36 @@ ElSubScada_BusbarDisconnector = function (params) {
         centerY = this.positionY + this.height / 2;
         radius  = third / 2;
         
-        var circle = this.snap.circle(centerX, centerY, radius);
-        circle.attr(this.circleAttr);
+        this.circle = this.snap.circle(centerX, centerY, radius);
+        this.circle.attr(this.circleAttr);
         
         var line = this.snap.line(centerX + ElSubScada_Pen.strokeWidth/2 - 2, 
             this.positionY, centerX + ElSubScada_Pen.strokeWidth/2 - 2, centerY - radius);
-        line.attr(this.attr);
+//        line.attr(this.attr);
 
-        var line = this.snap.line(centerX + ElSubScada_Pen.strokeWidth/2 - 2, 
+        var line1 = this.snap.line(centerX + ElSubScada_Pen.strokeWidth/2 - 2, 
             centerY + radius, centerX + ElSubScada_Pen.strokeWidth/2 - 2, this.positionY + this.height);
-        line.attr(this.attr);
+        
+        this.leads = this.snap.group(line, line1);
+        this.leads.attr({strokeWidth: ElSubScada_Pen.strokeWidth, stroke: this.colorUndefined})
+    }
+    
+    this.setState = function(state) {
+        this.state = state;
+        
+        switch (this.state) {
+        case ElSubScada_State.ON:
+            this.leads.attr({stroke: this.colorOn,})
+            this.circle.attr({stroke: this.colorOn, fill: this.colorOn})
+            break;
+        case ElSubScada_State.OFF:
+            this.leads.attr({stroke: this.colorOff,})
+            this.circle.attr({stroke: this.colorOff, fill: this.colorFillOff})
+            break;
+        default:
+            this.leads.attr({stroke: this.colorUndefined,})
+            this.circle.attr({stroke: this.colorUndefined, fill: this.colorUndefined})
+        }
     }
     
     this.drawGrid = function(){
@@ -74,5 +98,3 @@ ElSubScada_BusbarDisconnector = function (params) {
         line2.attr(gridAttr);
     }
 }
-
-
