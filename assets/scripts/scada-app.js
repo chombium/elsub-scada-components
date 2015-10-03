@@ -11,9 +11,9 @@ $(document).ready(function(){
 	    height: 10 + ElSubScada_Dimensions.elementHeight,
 	    color: "#000",
 	    colorUndefined: ElSubScada_Colors.colorUndefined,
-	    colorOn: ElSubScada_Colors.color35,
-	    colorOff: ElSubScada_Colors.colorOff,
+	    colorLevel: ElSubScada_Colors.color35,
 	    colorFillOff: ElSubScada_Colors.colorFillInaktive,
+	    state: 0
 //        debug: true,
 	});
 	bbd.draw();

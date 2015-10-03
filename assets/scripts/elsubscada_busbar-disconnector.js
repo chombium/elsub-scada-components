@@ -1,33 +1,52 @@
 ElSubScada_BusbarDisconnector = function (params) {
-    this.snap      = params.snap;
-    this.positionX = params.positionX;
-    this.positionY = params.positionY;
-    this.width     = params.width;
-    this.height    = params.height;
+    this.snap           = params.snap;
+    this.positionX      = params.positionX;
+    this.positionY      = params.positionY;
+    this.width          = params.width;
+    this.height         = params.height;
+    this.label          = params.label;
     this.colorUndefined = params.colorUndefined;
-    this.colorFillOff = params.colorFillOff;
-    this.colorOn = params.colorOn;
-    this.colorOff = params.colorOff;
-    this.debug     = params.debug || false;
+    this.colorFillOff   = params.colorFillOff;
+    this.colorLevel     = params.colorLevel;
+    this.debug          = params.debug || false;
     
     if (params.state == undefined){
         this.state = ElSubScada_State.UNDEFINED;
-        this.color = ElSubScada_Colors.colorUndefined;
     } else {
         this.state = params.state;
-        this.color = ElSubScada_Colors.colorUndefined;
     }
     
-    this.attr      = {
-        stroke: this.color,
-        strokeWidth: ElSubScada_Pen.strokeWidth,
+    this.getElementAttr = function(state){
+        leadAttr   = {};
+        leadAttr.strokeWidth = ElSubScada_Pen.strokeWidth;
+        
+        bodyAttr = {};
+        bodyAttr.strokeWidth = ElSubScada_Pen.strokeWidth;
+        
+        switch (state) {
+        case ElSubScada_State.ON:
+            leadAttr.stroke = this.colorLevel;
+            bodyAttr.stroke = this.colorLevel;
+            bodyAttr.fill = this.colorLevel;
+            break;
+        case ElSubScada_State.OFF:
+            leadAttr.stroke = this.colorLevel;
+            bodyAttr.stroke = this.colorLevel;
+            bodyAttr.fill = this.colorFillOff;
+            break;
+        default:
+            leadAttr.stroke = this.colorUndefined;
+            bodyAttr.stroke = this.colorUndefined;
+            bodyAttr.fill = this.colorUndefined;
+        }
+
+        return {
+            leadAttr   : leadAttr,
+            bodyAttr : bodyAttr
+        }
     }
     
-    this.circleAttr = {
-        stroke: this.color,
-        strokeWidth: ElSubScada_Pen.strokeWidth,
-        fill: ElSubScada_Colors.colorFillInaktive
-    }
+    attrs = this.getElementAttr(this.state);
     
     this.draw = function(){
         this.drawGrid();
@@ -38,36 +57,26 @@ ElSubScada_BusbarDisconnector = function (params) {
         centerY = this.positionY + this.height / 2;
         radius  = third / 2;
         
-        this.circle = this.snap.circle(centerX, centerY, radius);
-        this.circle.attr(this.circleAttr);
+        this.body = this.snap.circle(centerX, centerY, radius);
+        this.body.attr(attrs.bodyAttr);
         
         var line = this.snap.line(centerX + ElSubScada_Pen.strokeWidth/2 - 2, 
             this.positionY, centerX + ElSubScada_Pen.strokeWidth/2 - 2, centerY - radius);
-//        line.attr(this.attr);
 
         var line1 = this.snap.line(centerX + ElSubScada_Pen.strokeWidth/2 - 2, 
             centerY + radius, centerX + ElSubScada_Pen.strokeWidth/2 - 2, this.positionY + this.height);
         
         this.leads = this.snap.group(line, line1);
-        this.leads.attr({strokeWidth: ElSubScada_Pen.strokeWidth, stroke: this.colorUndefined})
+        this.leads.attr(attrs.leadAttr);
     }
     
     this.setState = function(state) {
         this.state = state;
         
-        switch (this.state) {
-        case ElSubScada_State.ON:
-            this.leads.attr({stroke: this.colorOn,})
-            this.circle.attr({stroke: this.colorOn, fill: this.colorOn})
-            break;
-        case ElSubScada_State.OFF:
-            this.leads.attr({stroke: this.colorOff,})
-            this.circle.attr({stroke: this.colorOff, fill: this.colorFillOff})
-            break;
-        default:
-            this.leads.attr({stroke: this.colorUndefined,})
-            this.circle.attr({stroke: this.colorUndefined, fill: this.colorUndefined})
-        }
+        attrs = this.getElementAttr(state);
+        
+        this.leads.attr(attrs.leadAttr)
+        this.body.attr(attrs.bodyAttr)
     }
     
     this.drawGrid = function(){

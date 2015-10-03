@@ -6,6 +6,7 @@ ElSubScada_Colors = {
         color110         : "red",
         color35          : "green",
         color10          : "red",
+        colorText        : "#000",
     }
 
 // Definition of pen parameters used for drawing
