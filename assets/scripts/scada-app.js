@@ -3,7 +3,17 @@ $(document).ready(function(){
     
 	var snap = Snap("#scada");
 	
-	var bbd = new ElSubScada_BusbarDisconnector({
+	var clk = function clickHanlder(){
+	    console.log('od nadvor!');
+	    
+	    if (bbd.getState() === 0){
+	        bbd.setState(1);
+	    } else {
+	        bbd.setState(0);
+	    }
+	}
+	
+	var bbd = new ElSubScada_CircuitBreaker({
 	    snap: snap,
 	    positionX: 10,
 	    positionY: 10,
@@ -15,6 +25,7 @@ $(document).ready(function(){
 	    colorFillOff: ElSubScada_Colors.colorFillInaktive,
 //	    state: 0
 	    labelText: 'Teeest',
+	    clickHandler: clk,
 //        debug: true,
 	});
 	bbd.draw();
