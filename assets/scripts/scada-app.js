@@ -13,7 +13,8 @@ $(document).ready(function(){
 	    colorUndefined: ElSubScada_Colors.colorUndefined,
 	    colorLevel: ElSubScada_Colors.color35,
 	    colorFillOff: ElSubScada_Colors.colorFillInaktive,
-	    state: 0
+//	    state: 0
+	    labelText: 'Teeest',
 //        debug: true,
 	});
 	bbd.draw();
@@ -27,6 +28,13 @@ $(document).ready(function(){
 	});
 	$('#undefined').click(function(){
 	    bbd.setState(ElSubScada_State.UNDEFINED);
+	});
+	$('#setText').keydown(function(event){
+	    var keycode = (event.keyCode ? event.keyCode : event.which);
+	    if(keycode == '13'){
+	        console.log('eeee    ' + $('#setText').val());
+	        bbd.setLabelText($('#setText').val());
+	    }
 	});
 });
 

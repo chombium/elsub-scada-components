@@ -17381,102 +17381,125 @@ return Snap;
 }));
 
 ElSubScada_BusbarDisconnector = function (params) {
-    this.snap      = params.snap;
-    this.positionX = params.positionX;
-    this.positionY = params.positionY;
-    this.width     = params.width;
-    this.height    = params.height;
+    this.snap           = params.snap;
+    this.positionX      = params.positionX;
+    this.positionY      = params.positionY;
+    this.width          = params.width;
+    this.height         = params.height;
+    this.label          = params.label;
     this.colorUndefined = params.colorUndefined;
-    this.colorFillOff = params.colorFillOff;
-    this.colorOn = params.colorOn;
-    this.colorOff = params.colorOff;
-    this.debug     = params.debug || false;
+    this.colorFillOff   = params.colorFillOff;
+    this.colorLevel     = params.colorLevel;
+    this.labelText      = params.labelText || '';
+    this.debug          = params.debug || false;
+    
+    // config params used for drawing
+    this.third    = this.width / 3;
+    this.twelveth = this.width / 12;
     
     if (params.state == undefined){
         this.state = ElSubScada_State.UNDEFINED;
-        this.color = ElSubScada_Colors.colorUndefined;
     } else {
         this.state = params.state;
-        this.color = ElSubScada_Colors.colorUndefined;
     }
     
-    this.attr      = {
-        stroke: this.color,
-        strokeWidth: ElSubScada_Pen.strokeWidth,
+    this.getElementAttr = function(state){
+        leadAttr   = {};
+        leadAttr.strokeWidth = ElSubScada_Pen.strokeWidth;
+        
+        bodyAttr = {};
+        bodyAttr.strokeWidth = ElSubScada_Pen.strokeWidth;
+        
+        switch (state) {
+        case ElSubScada_State.ON:
+            leadAttr.stroke = this.colorLevel;
+            bodyAttr.stroke = this.colorLevel;
+            bodyAttr.fill = this.colorLevel;
+            break;
+        case ElSubScada_State.OFF:
+            leadAttr.stroke = this.colorLevel;
+            bodyAttr.stroke = this.colorLevel;
+            bodyAttr.fill = this.colorFillOff;
+            break;
+        default:
+            leadAttr.stroke = this.colorUndefined;
+            bodyAttr.stroke = this.colorUndefined;
+            bodyAttr.fill = this.colorUndefined;
+        }
+
+        return {
+            leadAttr   : leadAttr,
+            bodyAttr : bodyAttr
+        }
     }
     
-    this.circleAttr = {
-        stroke: this.color,
-        strokeWidth: ElSubScada_Pen.strokeWidth,
-        fill: ElSubScada_Colors.colorFillInaktive
-    }
+    attrs = this.getElementAttr(this.state);
     
     this.draw = function(){
         this.drawGrid();
         
-        var third = this.width / 3;
-        
-        centerX = this.positionX + third/ 2;
+        centerX = this.positionX + this.third/ 2;
         centerY = this.positionY + this.height / 2;
-        radius  = third / 2;
+        radius  = this.third / 2;
         
-        this.circle = this.snap.circle(centerX, centerY, radius);
-        this.circle.attr(this.circleAttr);
+        this.body = this.snap.circle(centerX, centerY, radius);
+        this.body.attr(attrs.bodyAttr);
         
         var line = this.snap.line(centerX + ElSubScada_Pen.strokeWidth/2 - 2, 
             this.positionY, centerX + ElSubScada_Pen.strokeWidth/2 - 2, centerY - radius);
-//        line.attr(this.attr);
 
         var line1 = this.snap.line(centerX + ElSubScada_Pen.strokeWidth/2 - 2, 
             centerY + radius, centerX + ElSubScada_Pen.strokeWidth/2 - 2, this.positionY + this.height);
         
         this.leads = this.snap.group(line, line1);
-        this.leads.attr({strokeWidth: ElSubScada_Pen.strokeWidth, stroke: this.colorUndefined})
+        this.leads.attr(attrs.leadAttr);
+        
+        if (this.labelText !== ''){
+            this.label = this.snap.text(this.positionX +this.third + this.twelveth, centerY + this.height/4, this.labelText);
+        }
+    }
+    
+    this.setLabelText = function(text) {
+        this.label.remove();
+        this.label = this.snap.text(this.positionX +this.third + this.twelveth, centerY + this.height/4, text);
     }
     
     this.setState = function(state) {
         this.state = state;
         
-        switch (this.state) {
-        case ElSubScada_State.ON:
-            this.leads.attr({stroke: this.colorOn,})
-            this.circle.attr({stroke: this.colorOn, fill: this.colorOn})
-            break;
-        case ElSubScada_State.OFF:
-            this.leads.attr({stroke: this.colorOff,})
-            this.circle.attr({stroke: this.colorOff, fill: this.colorFillOff})
-            break;
-        default:
-            this.leads.attr({stroke: this.colorUndefined,})
-            this.circle.attr({stroke: this.colorUndefined, fill: this.colorUndefined})
-        }
+        attrs = this.getElementAttr(state);
+        
+        this.leads.attr(attrs.leadAttr)
+        this.body.attr(attrs.bodyAttr)
     }
     
     this.drawGrid = function(){
         if (this.debug === false) return;
         
-        var third = this.width / 3;
-        
         var gridAttr = {
             stroke: "#000",
-            strokeWidth: 3,
+            strokeWidth: 2,
             fill: ElSubScada_Colors.colorFillInaktive
         }
         var drawrect = this.snap.rect(this.positionX, this.positionY, this.width, this.height);
         drawrect.attr(gridAttr);
         
-        var line1 = this.snap.line(this.positionX + third, this.positionY, this.positionX + third, this.positionY + this.height);
+        var line1 = this.snap.line(this.positionX + this.third, this.positionY, this.positionX + this.third, this.positionY + this.height);
         line1.attr(gridAttr);
         
-        var line2 = this.snap.line(this.positionX + 2 * third, this.positionY, this.positionX + 2 * third, this.positionY + this.height);
+        var line2 = this.snap.line(this.positionX + 2 * this.third, this.positionY, this.positionX + 2 * this.third, this.positionY + this.height);
         line2.attr(gridAttr);
         
         var line2 = this.snap.line(this.positionX, this.positionY + this.height/2, 
             this.positionX + this.width, this.positionY + this.height/2);
         line2.attr(gridAttr);
         
-        var line2 = this.snap.line(this.positionX +third/2, this.positionY, 
-            this.positionX +third/2, this.positionY + this.height);
+        var line2 = this.snap.line(this.positionX +this.third/2, this.positionY, 
+            this.positionX +this.third/2, this.positionY + this.height);
+        line2.attr(gridAttr);
+        
+        var line2 = this.snap.line(this.positionX +this.third + this.twelveth, this.positionY, 
+            this.positionX +this.third + this.twelveth, this.positionY + this.height);
         line2.attr(gridAttr);
     }
 }
@@ -17489,6 +17512,7 @@ ElSubScada_Colors = {
         color110         : "red",
         color35          : "green",
         color10          : "red",
+        colorText        : "#000",
     }
 
 // Definition of pen parameters used for drawing
@@ -17522,9 +17546,10 @@ $(document).ready(function(){
 	    height: 10 + ElSubScada_Dimensions.elementHeight,
 	    color: "#000",
 	    colorUndefined: ElSubScada_Colors.colorUndefined,
-	    colorOn: ElSubScada_Colors.color35,
-	    colorOff: ElSubScada_Colors.colorOff,
+	    colorLevel: ElSubScada_Colors.color35,
 	    colorFillOff: ElSubScada_Colors.colorFillInaktive,
+//	    state: 0
+	    labelText: 'Teeest',
 //        debug: true,
 	});
 	bbd.draw();
@@ -17538,6 +17563,13 @@ $(document).ready(function(){
 	});
 	$('#undefined').click(function(){
 	    bbd.setState(ElSubScada_State.UNDEFINED);
+	});
+	$('#setText').keydown(function(event){
+	    var keycode = (event.keyCode ? event.keyCode : event.which);
+	    if(keycode == '13'){
+	        console.log('eeee    ' + $('#setText').val());
+	        bbd.setLabelText($('#setText').val());
+	    }
 	});
 });
 
