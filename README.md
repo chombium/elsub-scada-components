@@ -1,8 +1,12 @@
 # Elsub-SCADA-Components
 
-Small library of SCADA Components for Electrical Substations written with Snap SVG.
+Small library of SCADA Components for Electrical Substations written in Javascript with Snap SVG[1].
 
 This project is work in progress, there will be more components to come.
+
+
+References:
+[1] http://snapsvg.io
 
 
 ##Installation
