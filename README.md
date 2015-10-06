@@ -6,6 +6,7 @@ This project is work in progress, there will be more components to come.
 
 
 References:
+
 [1] http://snapsvg.io
 
 
@@ -14,6 +15,7 @@ References:
 To install and initialize the component library you will need bower and node.
 
 $ bower install
+
 $ npm install
 
 ## Revision History
